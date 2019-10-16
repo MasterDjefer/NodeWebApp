@@ -1,22 +1,13 @@
 const express = require("express");
 const Joi = require("joi");
-const bodyParser = require("body-parser");
 const route = express.Router();
 const UserModel = require("../models/user");
-
-route.use(bodyParser.json());
+const userValidationSchema = require("../validationSchemas/user").registerUser;
 
 function passCut(user) {
     const {name, email} = user;
     return { name, email };
 }
-
-const userValidationSchema = Joi.object().keys({
-    name: Joi.string().min(2).required(),
-    email: Joi.string().email({ minDomainAtoms: 2 }).required(),
-    password: Joi.string().required()
-});
-
 
 route.get("/:name", (req, res) => {
     const { name } = req.params;

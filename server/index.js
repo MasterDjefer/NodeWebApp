@@ -1,7 +1,9 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
 const userRoute = require("./routes/user");
+const authSysRoute = require("./routes/authSys");
 
 const PORT = 12345;
 const DBNAME = "groise";
@@ -17,8 +19,13 @@ mongoose.connection.on("open", (data) => {
 
 // mongoose.connection.close();
 
-
+app.use(bodyParser.json());
+app.use("/", authSysRoute);
 app.use("/user", userRoute);
+
+app.use((req, res, next) => {
+    res.send(`cant get ${req.url}`);
+});
 
 
 app.listen(PORT, () => {
