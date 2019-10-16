@@ -1,11 +1,30 @@
 const express = require("express");
 const Joi = require("joi");
-const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 const route = express.Router();
 const UserModel = require("../models/user");
 const userValidationSchemaLogin = require("../validationSchemas/user").loginUser;
 const userValidationSchemaRegister = require("../validationSchemas/user").registerUser;
 
+const SECRET = "lokistrikeand0trytofightWithhIm";
+
+
+route.get("/test", (req, res) => {
+    const { token } = req.body;
+    jwt.verify(token, SECRET, (err, data) => {
+        if (err) {
+            res.status(403).send("auth error");
+        } else {
+            UserModel.findOne({ name: data.name }, (err, user) => {
+                if (err) {
+                    res.status(404).send("user not found!");
+                } else {
+                    res.json(user);
+                }
+            });
+        }
+    });
+});
 
 route.post("/login", (req, res) => {
     const user = req.body;
@@ -13,12 +32,16 @@ route.post("/login", (req, res) => {
         if (err) {
             res.status(400).send("user data error");
         } else {
-            UserModel.findOne({ name: user.name }, (err, foundUser) => {
+            const { name } = user;
+            UserModel.findOne({ name }, (err, foundUser) => {
                 if (err) {
                     res.status(500).send(`server error`);
                 } else {
                     if (foundUser) {
-                        res.send("session created ");
+                        const token = jwt.sign({ name }, SECRET, { 
+                            expiresIn: '1h'
+                        });
+                        res.json({ message: "token created", token });
                     } else {
                         res.status(404).send(`can\'t find user ${user.name}!`);
                     }
