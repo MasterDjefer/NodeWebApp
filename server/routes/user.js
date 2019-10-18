@@ -9,6 +9,7 @@ function passCut(user) {
     return { name, email };
 }
 
+
 route.get("/:name", (req, res) => {
     const { name } = req.params;
     UserModel.find({ name }, (err, data) => {
@@ -33,6 +34,16 @@ route.post("/", (req, res) => {
                     res.send("user added");
                 }
             });
+        }
+    });
+});
+
+route.get("/", (req, res) => {
+    UserModel.find({}, (err, data) => {
+        if (err) {
+            res.status(500).send("cant find users");
+        } else {
+            res.json(data);
         }
     });
 });
