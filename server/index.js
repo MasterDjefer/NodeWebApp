@@ -8,6 +8,7 @@ const phoneRoute = require("./routes/phone");
 
 const PORT = 12345;
 const DBNAME = "groise";
+process.env.SECRET = "lokistrikeand0trytofightWithhIm";
 
 mongoose.connect(`mongodb://localhost:27017/${DBNAME}`, {
     useNewUrlParser: true,

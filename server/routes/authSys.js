@@ -6,12 +6,10 @@ const UserModel = require("../models/user");
 const userValidationSchemaLogin = require("../validationSchemas/user").loginUser;
 const userValidationSchemaRegister = require("../validationSchemas/user").registerUser;
 
-const SECRET = "lokistrikeand0trytofightWithhIm";
 
-
-route.get("/test", (req, res) => {
+route.post("/test", (req, res) => {
     const { token } = req.body;
-    jwt.verify(token, SECRET, (err, data) => {
+    jwt.verify(token, process.env.SECRET, (err, data) => {
         if (err) {
             res.status(403).send("auth error");
         } else {
@@ -38,7 +36,7 @@ route.post("/login", (req, res) => {
                     res.status(500).send(`server error`);
                 } else {
                     if (foundUser) {
-                        const token = jwt.sign({ name }, SECRET, { 
+                        const token = jwt.sign({ name }, process.env.SECRET, {
                             expiresIn: '1h'
                         });
                         res.json({ message: "token created", token });

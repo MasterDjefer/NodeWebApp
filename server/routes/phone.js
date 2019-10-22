@@ -1,13 +1,53 @@
 const express = require("express");
-// const Joi = require("joi");
+const Joi = require("joi");
+const jwt = require("jsonwebtoken");
 const route = express.Router();
-const Phone = require("../models/phone");
+const PhoneModel = require("../models/phone");
+const phoneValidationSchema = require("../validationSchemas/phone").phone;
 
 
 route.get("/", (req, res) => {
-    Phone.findAll()
+    PhoneModel.findAll()
     .then((data) => {
         res.json(data);
+    });
+});
+
+route.post("/", (req, res) => {
+    const { brand, model, price, token } = req.body;
+    const phone = { brand, model, price };
+
+    jwt.verify(token, process.env.SECRET, (err, data) => {
+        if (err) {
+            res.status(403).send("auth error");
+        } else {
+            Joi.validate(phone, phoneValidationSchema, (err, validatedPhone) => {
+                if (err) {
+                    res.status(403).send("phone obj error");
+                } else {
+                    PhoneModel.findAll({
+                        where: {
+                            brand,
+                            model
+                        }
+                    })
+                    .then((data) => {
+                        if (data.length) {
+                            res.status("403").send("such phone already exist!");
+                        } else{
+                            PhoneModel.create(phone)
+                            .then(data => {
+                                if (data) {
+                                    res.send(data);
+                                } else {
+                                    res.status(500).send("error insert");
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     });
 });
 
