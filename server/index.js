@@ -5,6 +5,7 @@ const app = express();
 const userRoute = require("./routes/user");
 const authSysRoute = require("./routes/authSys");
 const phoneRoute = require("./routes/phone");
+const cartRoute = require("./routes/cart");
 
 const PORT = 12345;
 const DBNAME = "groise";
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 app.use("/", authSysRoute);
 app.use("/user", userRoute);
 app.use("/phone", phoneRoute);
+app.use("/cart", cartRoute);
 
 app.use((req, res, next) => {
     res.send(`cant get ${req.url}`);

@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const db = new Sequelize("test", "k.zakharchuk", "qwerty", { dialect: "postgres" });
+const db = new Sequelize("groise", "k.zakharchuk", "qwerty", { dialect: "postgres" });
 
 const Phone = db.define("phone", {
     id: {
