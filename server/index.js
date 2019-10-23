@@ -1,6 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const redis = require("redis");
+const session = require("express-session");
+const RedisStore = require("connect-redis")(session);
 const app = express();
 const userRoute = require("./routes/user");
 const authSysRoute = require("./routes/authSys");
@@ -21,6 +24,16 @@ mongoose.connection.on("open", (data) => {
 });
 
 // mongoose.connection.close();
+
+app.use(session({
+    secret: "veryVerYsEcreT",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60
+    },
+    store: new RedisStore(redis.createClient())
+}));
 
 app.use(bodyParser.json());
 app.use("/", authSysRoute);
