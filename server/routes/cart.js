@@ -5,8 +5,13 @@ const route = express.Router();
 const PhoneModel = require("../models/phone");
 const phoneValidationSchema = require("../validationSchemas/phone").addPhone;
 
-const cart = [];
+route.use((req, res, next) => {
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
 
+    next();
+});
 
 route.post("/", (req, res) => {
     const { brand, model } = req.body;
@@ -25,7 +30,8 @@ route.post("/", (req, res) => {
             .then((data) => {
                 if (!data.length) {
                     res.status("404").send("such phone doesnt exist!");
-                } else {           
+                } else {
+                    const { cart } = req.session;
                     const cartItem = cart.find(((element) => {
                         return element.phone.brand === brand && element.phone.model === model;
                     }));
@@ -43,7 +49,7 @@ route.post("/", (req, res) => {
 });
 
 route.get("/", (req, res) => {
-    res.json(cart);
+    res.json(req.session);
 });
 
 module.exports = route;

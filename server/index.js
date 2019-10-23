@@ -32,7 +32,7 @@ app.use(session({
     cookie: {
         maxAge: 1000 * 60 * 60
     },
-    store: new RedisStore(redis.createClient())
+    store: new RedisStore({ client: redis.createClient() })
 }));
 
 app.use(bodyParser.json());
