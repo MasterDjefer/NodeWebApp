@@ -1,0 +1,4 @@
+sudo -i -u postgres
+createdb [dbname];
+psql [dbname]
+...

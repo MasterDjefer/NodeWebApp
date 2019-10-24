@@ -3,15 +3,9 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const route = express.Router();
 const PhoneModel = require("../models/phone");
+const CartModel = require("../models/cart");
 const phoneValidationSchema = require("../validationSchemas/phone").addPhone;
 
-route.use((req, res, next) => {
-    if (!req.session.cart) {
-        req.session.cart = [];
-    }
-
-    next();
-});
 
 route.post("/", (req, res) => {
     const { brand, model } = req.body;
@@ -31,16 +25,7 @@ route.post("/", (req, res) => {
                 if (!data.length) {
                     res.status("404").send("such phone doesnt exist!");
                 } else {
-                    const { cart } = req.session;
-                    const cartItem = cart.find(((element) => {
-                        return element.phone.brand === brand && element.phone.model === model;
-                    }));
-
-                    if (cartItem) {
-                        cartItem.count++;
-                    } else {
-                        cart.push({ phone: validatedPhone , count: 1} );
-                    }
+                    new CartModel(req.session.cart).add(phone);
                     res.send("added");
                 }
             });
@@ -49,7 +34,7 @@ route.post("/", (req, res) => {
 });
 
 route.get("/", (req, res) => {
-    res.json(req.session);
+    res.send(new CartModel(req.session.cart).formatCart());
 });
 
 module.exports = route;

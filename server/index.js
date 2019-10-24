@@ -36,6 +36,16 @@ app.use(session({
 }));
 
 app.use(bodyParser.json());
+
+
+app.use((req, res, next) => {
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+
+    next();
+});
+
 app.use("/", authSysRoute);
 app.use("/user", userRoute);
 app.use("/phone", phoneRoute);
