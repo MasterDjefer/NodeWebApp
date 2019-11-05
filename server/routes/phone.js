@@ -14,8 +14,12 @@ route.get("/", (req, res) => {
 });
 
 route.post("/", (req, res) => {
-    const { brand, model, price, token } = req.body;
+    const { brand, model, price } = req.body;
     const phone = { brand, model, price };
+    const [ authType, token ] = req.headers.authorization.split(" ");
+    if (authType !== "Bearer") {
+        return res.send("auth error");
+    }
 
     jwt.verify(token, process.env.SECRET, (err, data) => {
         if (err) {
